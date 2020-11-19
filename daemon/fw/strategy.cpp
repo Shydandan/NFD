@@ -168,6 +168,31 @@ Strategy::beforeSatisfyInterest(const shared_ptr<pit::Entry>& pitEntry,
 }
 
 void
+Strategy::satisfyInterest(const shared_ptr<pit::Entry>& pitEntry,
+                          const FaceEndpoint& ingress, const Data& data,
+                          std::set<std::pair<Face*, EndpointId>>& satisfiedDownstreams,
+                          std::set<std::pair<Face*, EndpointId>>& unsatisfiedDownstreams)
+{
+  NFD_LOG_DEBUG("satisfyInterest pitEntry=" << pitEntry->getName()
+                << " in=" << ingress << " data=" << data.getName());
+
+  NFD_LOG_DEBUG("onIncomingData matching=" << pitEntry->getName());
+
+  auto now = time::steady_clock::now();
+
+  // remember pending downstreams
+  for (const pit::InRecord& inRecord : pitEntry->getInRecords()) {
+    if (inRecord.getExpiry() > now) {
+      satisfiedDownstreams.emplace(&inRecord.getFace(), 0);
+    }
+  }
+
+  // invoke PIT satisfy callback
+  beforeSatisfyInterest(pitEntry, ingress, data);
+}
+
+
+void
 Strategy::afterContentStoreHit(const shared_ptr<pit::Entry>& pitEntry,
                                const FaceEndpoint& ingress, const Data& data)
 {
