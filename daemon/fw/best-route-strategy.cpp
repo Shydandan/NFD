@@ -23,6 +23,8 @@
  * NFD, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+//NFD git test
 #include "best-route-strategy.hpp"
 #include "algorithm.hpp"
 
